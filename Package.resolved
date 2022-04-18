@@ -1,0 +1,50 @@
+{
+  "pins" : [
+    {
+      "identity" : "asn1decoder",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/filom/ASN1Decoder",
+      "state" : {
+        "revision" : "65953a42a0f039f53c73e48fd88c02809f7db607",
+        "version" : "1.8.0"
+      }
+    },
+    {
+      "identity" : "dgca-verification-core-library",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eu-digital-green-certificates/dgca-verification-core-library.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "12cd17f68508c73d69ec14fd58068926936f307a"
+      }
+    },
+    {
+      "identity" : "swiftcbor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/eu-digital-green-certificates/SwiftCBOR",
+      "state" : {
+        "branch" : "master",
+        "revision" : "0209a2d1a30b1b42334c4ad3f8bd221b977b2273"
+      }
+    },
+    {
+      "identity" : "swiftpath",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/g-mark/SwiftPath.git",
+      "state" : {
+        "branch" : "develop",
+        "revision" : "63e6b808696af7f97db729b571c78830afbf925b"
+      }
+    },
+    {
+      "identity" : "swiftyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON",
+      "state" : {
+        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+        "version" : "5.0.1"
+      }
+    }
+  ],
+  "version" : 2
+}
