@@ -13,7 +13,7 @@ public class SHDataManager {
     var localData = LocalSHData()
     
     public func add(_ cert: SHCert, completion: @escaping DataCompletionHandler) {
-        localData.certStrings.append(SHCertString(date: Date(), certString: cert.payload))
+        localData.certStrings.append(SHCertString(date: Date(), certString: cert.fullPayloadString))
         storage.save(localData, completion: completion)
     }
     

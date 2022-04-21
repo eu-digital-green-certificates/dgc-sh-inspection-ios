@@ -9,7 +9,7 @@ import Foundation
 import DCCInspection
 import DGCCoreLibrary
 
-class SHDataCenter {
+public class SHDataCenter {
     public static let shDataManager: SHDataManager = SHDataManager()
     
     public static var certStrings: [SHCertString] {

@@ -21,6 +21,7 @@ public class SHCert: CertificationProtocol, Codable {
 	public var uvciHash: Data?
 	public var countryCodeUvciHash: Data?
 	public var signatureHash: Data?
+    public let fullPayloadString: String
 	public let payload: String
 	
 	public var firstName: String {
@@ -110,6 +111,7 @@ public class SHCert: CertificationProtocol, Codable {
      
 	public required init(payload: String, ruleCountryCode: String? = nil) throws {
         // self.body = JSON(payload)
+        self.fullPayloadString = payload
         guard let barcode = try? SHBarcodeDecoder.builder(payload: payload) else {
             throw CertificateParsingError.parsing(errors: [])
         }
