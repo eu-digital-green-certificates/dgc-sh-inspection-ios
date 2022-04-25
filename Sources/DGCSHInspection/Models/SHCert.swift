@@ -93,7 +93,9 @@ public class SHCert: CertificationProtocol, Codable {
 	
 	public var type: SHCertType {
         guard let rawArray = get("$.vc..type.*").array,
-              let rawType = rawArray[1].string else {
+              rawArray != nil,
+              rawArray.count > 0,
+              let rawType = rawArray[0].string else {
             return .other
         }
         return SHCertType(value: rawType.replacingOccurrences(of: "https://smarthealth.cards#", with: ""))
@@ -101,7 +103,10 @@ public class SHCert: CertificationProtocol, Codable {
     
     public var subType: String {
         guard let rawArray = get("$.vc..type.*").array,
-              let rawType = rawArray[2].string else {
+              rawArray != nil,
+              rawArray.count > 0,
+              rawArray.count > 1,
+              let rawType = rawArray[1].string else {
             return ""
         }
         return rawType.replacingOccurrences(of: "https://smarthealth.cards#", with: "")
