@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  DGCSHInspection.swift
 //  
 //
 //  Created by Paul Ballmann on 18.04.22.
@@ -7,9 +7,8 @@
 
 import Foundation
 import DGCCoreLibrary
-import DCCInspection
 
-public final class SHInspection: CertificateInspection {
+public final class DGCSHInspection: CertificateInspection {
     public var lastUpdate: Date
     
     public func updateLocallyStoredData(appType: AppType, completion: @escaping DataCompletionHandler) {
@@ -21,7 +20,7 @@ public final class SHInspection: CertificateInspection {
         }
     }
     
-    public func validateCertificate(_ certificate: CertificationProtocol) -> VerifyingProtocol {
+    public func validateCertificate(_ certificate: CertificationProtocol) -> ValidityState {
         return ValidityState(technicalValidity: VerificationResult.valid, issuerValidity: VerificationResult.valid, destinationValidity: VerificationResult.valid, travalerValidity: VerificationResult.valid, allRulesValidity: VerificationResult.valid, validityFailures: [], infoSection: nil, isRevoked: false)
     }
     

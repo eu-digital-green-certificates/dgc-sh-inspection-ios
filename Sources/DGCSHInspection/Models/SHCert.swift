@@ -1,5 +1,5 @@
 //
-//  HCert.swift
+//  SHCert.swift
 //  
 //
 //  Created by Paul Ballmann on 09.04.22.
@@ -9,7 +9,6 @@ import Foundation
 import DGCCoreLibrary
 import SwiftyJSON
 import Sextant
-import DCCInspection
 import SWCompression
 import Compression
 
@@ -28,7 +27,7 @@ public class SHCert: CertificationProtocol, Codable {
 	
 	public var firstName: String {
         var targetString = ""
-        var rawNameArray = get("$.vc..name..given.*").array!
+        let rawNameArray = get("$.vc..name..given.*").array!
         rawNameArray.forEach { elem in
             targetString += elem.string!.replacingOccurrences(of: "[]\n", with: "") + " "
         }

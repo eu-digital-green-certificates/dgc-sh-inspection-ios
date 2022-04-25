@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  TrustedIssuerResponse.swift
 //  
 //
 //  Created by Paul Ballmann on 22.04.22.

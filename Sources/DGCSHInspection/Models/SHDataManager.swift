@@ -38,7 +38,7 @@ public class SHDataManager {
     }
     
     public func containsKid(_ kidStr: String) -> Bool {
-        if let find = localData.kidList.firstIndex(where: { $0.key == kidStr }) {
+        if localData.kidList.firstIndex(where: { $0.key == kidStr }) != nil {
             return true
         } else {
             return false

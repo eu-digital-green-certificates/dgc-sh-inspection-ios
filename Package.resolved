@@ -1,50 +1,115 @@
 {
-  "pins" : [
-    {
-      "identity" : "asn1decoder",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/filom/ASN1Decoder",
-      "state" : {
-        "revision" : "65953a42a0f039f53c73e48fd88c02809f7db607",
-        "version" : "1.8.0"
+  "object": {
+    "pins": [
+      {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire",
+        "state": {
+          "branch": null,
+          "revision": "354dda32d89fc8cd4f5c46487f64957d355f53d8",
+          "version": "5.6.1"
+        }
+      },
+      {
+        "package": "ASN1Decoder",
+        "repositoryURL": "https://github.com/filom/ASN1Decoder",
+        "state": {
+          "branch": null,
+          "revision": "65953a42a0f039f53c73e48fd88c02809f7db607",
+          "version": "1.8.0"
+        }
+      },
+      {
+        "package": "BitByteData",
+        "repositoryURL": "https://github.com/tsolomko/BitByteData",
+        "state": {
+          "branch": null,
+          "revision": "c119e12decae8f56066df3345a4ac1a05b2f06d5",
+          "version": "2.0.1"
+        }
+      },
+      {
+        "package": "Chronometer",
+        "repositoryURL": "https://github.com/KittyMac/Chronometer.git",
+        "state": {
+          "branch": null,
+          "revision": "5e6481a277db398a7a3989f54f83c06e01eb4b15",
+          "version": "0.1.3"
+        }
+      },
+      {
+        "package": "DGCCoreLibrary",
+        "repositoryURL": "https://github.com/eu-digital-green-certificates/dgca-verification-core-library.git",
+        "state": {
+          "branch": "main",
+          "revision": "587a586ef052ac492e5cef6a938f0f6a1f4f6bf4",
+          "version": null
+        }
+      },
+      {
+        "package": "Hitch",
+        "repositoryURL": "https://github.com/KittyMac/Hitch.git",
+        "state": {
+          "branch": null,
+          "revision": "587d48f17738151436826759dd6c15668efd67b1",
+          "version": "0.4.31"
+        }
+      },
+      {
+        "package": "Sextant",
+        "repositoryURL": "https://github.com/KittyMac/Sextant.git",
+        "state": {
+          "branch": "main",
+          "revision": "68b1db52653d39dd18a4aab19d728e598d4e4c92",
+          "version": null
+        }
+      },
+      {
+        "package": "Spanker",
+        "repositoryURL": "https://github.com/KittyMac/Spanker.git",
+        "state": {
+          "branch": null,
+          "revision": "b57e8aef16069f205ac74d5f2b27fa1224824a0c",
+          "version": "0.2.19"
+        }
+      },
+      {
+        "package": "SWCompression",
+        "repositoryURL": "https://github.com/tsolomko/SWCompression.git",
+        "state": {
+          "branch": null,
+          "revision": "4ad6940f2990f2d9f27b39d013c7a64b602d9c50",
+          "version": "4.8.0"
+        }
+      },
+      {
+        "package": "SwiftCBOR",
+        "repositoryURL": "https://github.com/eu-digital-green-certificates/SwiftCBOR",
+        "state": {
+          "branch": "master",
+          "revision": "0209a2d1a30b1b42334c4ad3f8bd221b977b2273",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftPath",
+        "repositoryURL": "https://github.com/g-mark/SwiftPath.git",
+        "state": {
+          "branch": "develop",
+          "revision": "63e6b808696af7f97db729b571c78830afbf925b",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftyJSON",
+        "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
+        "state": {
+          "branch": null,
+          "revision": "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
+          "version": "5.0.1"
+        }
       }
-    },
-    {
-      "identity" : "dgca-verification-core-library",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eu-digital-green-certificates/dgca-verification-core-library.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "12cd17f68508c73d69ec14fd58068926936f307a"
-      }
-    },
-    {
-      "identity" : "swiftcbor",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/eu-digital-green-certificates/SwiftCBOR",
-      "state" : {
-        "branch" : "master",
-        "revision" : "0209a2d1a30b1b42334c4ad3f8bd221b977b2273"
-      }
-    },
-    {
-      "identity" : "swiftpath",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/g-mark/SwiftPath.git",
-      "state" : {
-        "branch" : "develop",
-        "revision" : "63e6b808696af7f97db729b571c78830afbf925b"
-      }
-    },
-    {
-      "identity" : "swiftyjson",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftyJSON/SwiftyJSON",
-      "state" : {
-        "revision" : "b3dcd7dbd0d488e1a7077cb33b00f2083e382f07",
-        "version" : "5.0.1"
-      }
-    }
-  ],
-  "version" : 2
+    ]
+  },
+  "version": 1
 }

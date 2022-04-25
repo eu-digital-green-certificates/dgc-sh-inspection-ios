@@ -16,10 +16,8 @@ public class TrustedListLoader {
         var request = URLRequest(url: URL(string: "https://dgca-verifier-service-eu-test.cfapps.eu10.hana.ondemand.com/trustedissuers")!)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        // request.httpBody = try! JSONSerialization.data(withJSONObject: jwts)
         AF.request(request).response {
-            guard
-                case .success = $0.result,
+            guard case .success = $0.result,
                 let status = $0.response?.statusCode,
                 let response = $0.data,
                 status / 100 == 2
@@ -95,7 +93,7 @@ public class TrustedListLoader {
                     SHDataCenter.shDataManager.add(kidList) { response in
                         completion(kidList, response)
                     }
-                case .failure(let error):
+            case .failure(_):
                     completion(nil, .noData)
             }
         }
