@@ -21,8 +21,10 @@ public class SHCert: CertificationProtocol, Codable {
 	public var uvciHash: Data?
 	public var countryCodeUvciHash: Data?
 	public var signatureHash: Data?
-    public let fullPayloadString: String
-	public let payload: String
+    public var fullPayloadString: String
+	public var payload: String
+    public var isUntrusted: Bool = false
+    public var issuerUrl: String
 	
 	public var firstName: String {
         var targetString = ""
@@ -108,22 +110,49 @@ public class SHCert: CertificationProtocol, Codable {
 	public var dateOfBirth: String {
         return get("$.vc..birthDate").array?.first?.string ?? ""
     }
-     
-	public required init(payload: String, ruleCountryCode: String? = nil) throws {
+     /*
+    // Used to instantiate a new SHCert object after the fact
+    required public convenience init(payload: String, ruleCountryCode: String? = nil) throws {
+        // try self._init(payload: payload, ruleCountryCode: ruleCountryCode, ignoreWarnings: false)
+        try self.init(payload: payload, ruleCountryCode: ruleCountryCode, ignoreWarnings: false)
+    }
+    */
+    
+    public required init(payload: String, ruleCountryCode: String? = nil) throws {
         // self.body = JSON(payload)
         self.fullPayloadString = payload
-        guard let barcode = try? SHBarcodeDecoder.builder(payload: payload) else {
-            throw CertificateParsingError.parsing(errors: [])
+        var barcode: String = payload
+        if !payload.starts(with: "ey") {
+            // is not JWT, do numeric decoding
+            guard let bc = try? SHBarcodeDecoder.builder(payload: payload) else {
+                throw SHParsingError.invalidStructure
+            }
+            barcode = bc
         }
         
         let barcodeParts = barcode.split(separator: ".")
         guard let header = String(barcodeParts[0]).base64UrlDecoded() else {
-            throw CertificateParsingError.unknown
+            throw SHParsingError.invalidStructure
         }
-
         let payload = String(barcodeParts[1]).base64UrlToBase64()
-        let compressedData = Data(base64Encoded: payload)!
-        let jsonData = compressedData.inflateFixed()
+        guard let headerJson = try? JSONSerialization.jsonObject(with: header.data(using: .utf8)!, options: []) as? [String: Any] else { throw SHParsingError.invalidStructure }
+        var jsonData: Data
+        
+        if let algo = headerJson["ZIP"] as? String,
+            algo == "DEF" {
+            // use deflate
+            let compressedData = Data(base64Encoded: payload)!
+            jsonData = compressedData.inflateFixed()
+        } else if let typ = headerJson["typ"] as? String,
+            typ == "JWT" {
+            // use jwt
+            jsonData = Data(base64Encoded: payload)!
+        } else {
+            throw SHParsingError.invalidStructure
+        }
+        
+        guard let kidStr = headerJson["KID"] as? String else { throw SHParsingError.kidNotIncluded }
+    
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
         if #available(iOS 13.0, *) {
@@ -135,10 +164,28 @@ public class SHCert: CertificationProtocol, Codable {
             guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: []), encoding: .utf8) else {
                 throw CertificateParsingError.unknown
             }
-            // let string2 = jrs.stringByReplacingOccurrencesOfString(#"\"#, withString: "")
             jsonRawString = jrs.replacingOccurrences(of: #""\""#, with: "")
         }
         self.payload = jsonRawString
+        guard let payloadJson = try? JSONSerialization.jsonObject(with: jsonRawString.data(using: .utf8)!) as? [String: Any] else {
+            throw SHParsingError.invalidStructure
+        }
+        guard let issuer = payloadJson["iss"] as? String else { throw SHParsingError.issuerNotIncluded }
+        self.issuerUrl = issuer
+        
+        guard let nbfString = payloadJson["nbf"] as? String,
+              let nbfDouble = Double(nbfString),
+              Date(timeIntervalSince1970: nbfDouble) < Date()
+        else { throw SHParsingError.timeBeforeNBF }
+        
+        if !checkKid(kidStr) {
+            // kid is valid
+            throw SHParsingError.kidNotFound(untrustedUrl: self.issuerUrl)
+        }
+    }
+    
+    private func checkKid(_ kid: String) -> Bool {
+        return SHDataCenter.shDataManager.containsKid(kid)
     }
 	
 	private func get(_ key: String) -> JSON {

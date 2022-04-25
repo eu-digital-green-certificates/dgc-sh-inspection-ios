@@ -17,7 +17,7 @@ public final class SHInspection: CertificateInspection {
         case .verifier:
             break
         case .wallet:
-            SHDataCenter.prepareWalletLocalData(completion: completion)
+            SHDataCenter.reloadWalletData(completion: completion)
         }
     }
     

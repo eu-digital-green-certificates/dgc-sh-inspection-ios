@@ -10,6 +10,7 @@ import Foundation
 public class LocalSHData: Codable {
     // public var encodedPublicKeys = [String : [String]]()
     public var certStrings = [SHCertString]()
+    public var kidList: [String: String] = [:]
     
     public var resumeToken: String = ""
     public var lastFetch: Date = Date.distantPast
