@@ -42,17 +42,23 @@ extension SHDataCenter {
                 if lastFetch < Date.now {
                     TrustedListLoader.loadTrustedList { response in
                         completion(response)
+                        return
                     }
+                } else {
+                    completion(.success)
                 }
             } else {
                 // Fallback on earlier versions
                 if lastFetch.timeIntervalSince1970 < Date().timeIntervalSince1970 {
                     TrustedListLoader.loadTrustedList { response in
                         completion(response)
+                        return
                     }
+                } else {
+                    completion(.success)
                 }
             }
-            completion(.success)
+            //completion(.success)
         }
     }
     
