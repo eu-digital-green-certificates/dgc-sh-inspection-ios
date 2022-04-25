@@ -11,14 +11,14 @@ public class TrustedIssuerResponse: Codable {
     public let url: String
     public let type: String
     public let country: String
-    public let thumbprint: String
+    public let thumbprint: String?
     public let sslPublicKey: String
     public let keyStorageType: String
     public let signature: String
-    public let timestamp: Date
+    public let timestamp: String
     public let name: String
 
-    public init(url: String, type: String, country: String, thumbprint: String, sslPublicKey: String, keyStorageType: String, signature: String, timestamp: Date, name: String) {
+    public init(url: String, type: String, country: String, thumbprint: String, sslPublicKey: String, keyStorageType: String, signature: String, timestamp: String, name: String) {
         self.url = url
         self.type = type
         self.country = country

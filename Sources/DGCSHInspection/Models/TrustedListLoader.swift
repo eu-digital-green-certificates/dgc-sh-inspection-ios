@@ -53,7 +53,7 @@ public class TrustedListLoader {
                             if let keyList = json["keys"].array {
                                 keyList.forEach { element in
                                     let kid = element["kid"]
-                                    kidList[kid.stringValue] = element.rawString()
+                                    kidList[kid.stringValue] = element.rawString() ?? ""
                                 }
                             }
                             case .failure(let error):
@@ -110,8 +110,6 @@ public class TrustedListLoader {
             } else {
                 trustedElementUrl = "https://\(trustedElementUrl)/.well-known/did.json"
             }
-        } else {
-            return ""
         }
         return trustedElementUrl
     }
