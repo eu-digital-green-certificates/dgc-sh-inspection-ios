@@ -74,6 +74,7 @@ public class TrustedListLoader {
     }
     
     public static func resolveUnknownIssuer(_ rawUrl: String, completion: @escaping (_ kidList: [String: String]?, _ operationResult: DataOperationResult) -> ()) {
+        
         var request = URLRequest(url: URL(string: rawUrl)!)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

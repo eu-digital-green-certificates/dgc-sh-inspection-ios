@@ -138,7 +138,7 @@ public class SHCert: CertificationProtocol, Codable {
         guard let headerJson = try? JSONSerialization.jsonObject(with: header.data(using: .utf8)!, options: []) as? [String: Any] else { throw SHParsingError.invalidStructure }
         var jsonData: Data
         
-        if let algo = headerJson["ZIP"] as? String,
+        if let algo = headerJson["zip"] as? String,
             algo == "DEF" {
             // use deflate
             let compressedData = Data(base64Encoded: payload)!
@@ -151,7 +151,7 @@ public class SHCert: CertificationProtocol, Codable {
             throw SHParsingError.invalidStructure
         }
         
-        guard let kidStr = headerJson["KID"] as? String else { throw SHParsingError.kidNotIncluded }
+        guard let kidStr = headerJson["kid"] as? String else { throw SHParsingError.kidNotIncluded }
     
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
@@ -173,8 +173,7 @@ public class SHCert: CertificationProtocol, Codable {
         guard let issuer = payloadJson["iss"] as? String else { throw SHParsingError.issuerNotIncluded }
         self.issuerUrl = issuer
         
-        guard let nbfString = payloadJson["nbf"] as? String,
-              let nbfDouble = Double(nbfString),
+        guard let nbfDouble = payloadJson["nbf"] as? Double,
               Date(timeIntervalSince1970: nbfDouble) < Date()
         else { throw SHParsingError.timeBeforeNBF }
         
