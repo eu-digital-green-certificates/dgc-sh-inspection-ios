@@ -42,7 +42,7 @@ public class TrustedListLoader {
                         continue
                     }
                     guard let requestURL = URL(string: url) else { continue }
-                    var request = URLRequest(url: URL(string: requestURL)
+                    var request = URLRequest(url: requestURL)
                     request.httpMethod = "GET"
                     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     AF.request(request).responseJSON { response in

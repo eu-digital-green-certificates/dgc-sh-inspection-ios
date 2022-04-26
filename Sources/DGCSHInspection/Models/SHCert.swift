@@ -29,14 +29,14 @@ public class SHCert: CertificationProtocol, Codable {
         var targetString = ""
         let rawNameArray = get("$.vc..name..given.*").array
         rawNameArray?.forEach { elem in
-            targetString += elem.string?.replacingOccurrences(of: "[]\n", with: "") + " "
+            targetString += elem.string?.replacingOccurrences(of: "[]\n", with: "") ?? "" + " "
         }
         return targetString
 	}
     
     public var prettyBody: String {
         do {
-            guard let data = payload.data(using: .utf8 else { return }
+            guard let data = payload.data(using: .utf8) else { return "" }
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             let jsonRawString: String
             if #available(iOS 13.0, *), #available(macOS 10.15, *) {
