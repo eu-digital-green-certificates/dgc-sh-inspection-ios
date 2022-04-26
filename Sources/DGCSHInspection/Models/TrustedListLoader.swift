@@ -13,7 +13,8 @@ import SwiftyJSON
 public class TrustedListLoader {
     
     public static func loadTrustedList(completion: @escaping DataCompletionHandler) {
-        var request = URLRequest(url: URL(string: "https://dgca-verifier-service-eu-test.cfapps.eu10.hana.ondemand.com/trustedissuers")!)
+        guard let requestURL = URL(string: "https://dgca-verifier-service-eu-test.cfapps.eu10.hana.ondemand.com/trustedissuers") else { return }
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         AF.request(request).response {
@@ -40,7 +41,8 @@ public class TrustedListLoader {
                         trustListGroup.leave()
                         continue
                     }
-                    var request = URLRequest(url: URL(string: url)!)
+                    guard let requestURL = URL(string: url) else { continue }
+                    var request = URLRequest(url: URL(string: requestURL)
                     request.httpMethod = "GET"
                     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     AF.request(request).responseJSON { response in
@@ -76,7 +78,8 @@ public class TrustedListLoader {
         if !url.hasSuffix(".json") {
             url = "\(url)/.well-known/jwks.json"
         }
-        var request = URLRequest(url: URL(string: url)!)
+        guard let requestURL = URL(string: url) else { return }
+        var request = URLRequest(url: requestURL)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         AF.request(request).responseJSON { response in
