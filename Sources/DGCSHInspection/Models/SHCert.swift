@@ -92,7 +92,6 @@ public class SHCert: CertificationProtocol, Codable {
 	
 	public var type: SHCertType {
         guard let rawArray = get("$.vc..type.*").array,
-              rawArray != nil,
               rawArray.count > 0,
               let rawType = rawArray[0].string else {
             return .other
@@ -102,7 +101,6 @@ public class SHCert: CertificationProtocol, Codable {
     
     public var subType: String {
         guard let rawArray = get("$.vc..type.*").array,
-              rawArray != nil,
               rawArray.count > 0,
               rawArray.count > 1,
               let rawType = rawArray[1].string else {
