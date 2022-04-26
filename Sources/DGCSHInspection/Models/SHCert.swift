@@ -27,22 +27,23 @@ public class SHCert: CertificationProtocol, Codable {
 	
 	public var firstName: String {
         var targetString = ""
-        let rawNameArray = get("$.vc..name..given.*").array!
-        rawNameArray.forEach { elem in
-            targetString += elem.string!.replacingOccurrences(of: "[]\n", with: "") + " "
+        let rawNameArray = get("$.vc..name..given.*").array
+        rawNameArray?.forEach { elem in
+            targetString += elem.string?.replacingOccurrences(of: "[]\n", with: "") + " "
         }
         return targetString
 	}
     
     public var prettyBody: String {
         do {
-            let jsonObject = try JSONSerialization.jsonObject(with: payload.data(using: .utf8)!, options: [])
+            guard let data = payload.data(using: .utf8 else { return }
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             let jsonRawString: String
             if #available(iOS 13.0, *), #available(macOS 10.15, *) {
-                guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes, .prettyPrinted]), encoding: .utf8) else {
-                    return ""
-                }
+                let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes, .prettyPrinted])
+                guard let jrs = String(data: jsonData, encoding: .utf8) else { return "" }
                 jsonRawString = jrs
+                
             } else {
                 let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
                 guard let jrs = String(data: jsonData, encoding: .utf8) else { return "" }
@@ -127,18 +128,19 @@ public class SHCert: CertificationProtocol, Codable {
         guard let header = String(barcodeParts[0]).base64UrlDecoded() else { throw SHParsingError.invalidStructure }
         
         let payload = String(barcodeParts[1]).base64UrlToBase64()
-        guard let headerJson = try? JSONSerialization.jsonObject(with: header.data(using: .utf8)!, options: []) as? [String: Any] else { throw SHParsingError.invalidStructure }
+        guard let data = header.data(using: .utf8), let headerJson = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        else { throw SHParsingError.invalidStructure }
         
         var jsonData: Data
         
-        if let algo = headerJson["zip"] as? String, algo == "DEF" {
+        if let algo = headerJson["zip"] as? String, algo == "DEF", let compressedData = Data(base64Encoded: payload) {
             // use deflate
-            let compressedData = Data(base64Encoded: payload)!
             jsonData = compressedData.inflateFixed()
-        } else if let typ = headerJson["typ"] as? String,
-            typ == "JWT" {
+        
+        } else if let typ = headerJson["typ"] as? String, typ == "JWT", let typData = Data(base64Encoded: payload) {
             // use jwt
-            jsonData = Data(base64Encoded: payload)!
+            jsonData = typData
+        
         } else {
             throw SHParsingError.invalidStructure
         }
@@ -148,18 +150,23 @@ public class SHCert: CertificationProtocol, Codable {
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
         if #available(iOS 13.0, *), #available(macOS 10.15, *) {
-            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes]), encoding: .utf8) else { throw CertificateParsingError.unknown }
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes])
+            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknown }
             
             jsonRawString = jrs
+            
         } else {
-            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: []), encoding: .utf8) else { throw CertificateParsingError.unknown }
+            let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [])
+            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknown }
             
             jsonRawString = jrs.replacingOccurrences(of: #""\""#, with: "")
         }
+        
         self.payload = jsonRawString
-        guard let payloadJson = try? JSONSerialization.jsonObject(with: jsonRawString.data(using: .utf8)!) as? [String: Any] else {
+        guard let data = jsonRawString.data(using: .utf8), let payloadJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw SHParsingError.invalidStructure
         }
+        
         guard let issuer = payloadJson["iss"] as? String else { throw SHParsingError.issuerNotIncluded }
         self.issuerUrl = issuer
         
