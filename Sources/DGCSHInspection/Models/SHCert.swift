@@ -44,13 +44,14 @@ public class SHCert: CertificationProtocol, Codable {
                 }
                 jsonRawString = jrs
             } else {
-                guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]), encoding: .utf8) else {
-                    return ""
-                }
+                let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted])
+                guard let jrs = String(data: jsonData, encoding: .utf8) else { return "" }
                 jsonRawString = jrs.replacingOccurrences(of: #""\""#, with: "")
             }
             return jsonRawString
-        } catch {
+            
+        } catch let error {
+            DGCLogger.logError(error)
             return ""
         }
     }
@@ -76,24 +77,17 @@ public class SHCert: CertificationProtocol, Codable {
     }
 	
 	public var issuer: String {
-        guard let rawArray = get("$.vc..actor.display").array,
-              let actor = rawArray.last else {
-            return ""
-        }
+        guard let rawArray = get("$.vc..actor.display").array, let actor = rawArray.last else { return "" }
         return actor.string ?? ""
     }
     
     public var body: JSON {
-        guard let rawArray = get("$.vc.credentialSubject.fhirBundle").array else {
-            return JSON("")
-        }
+        guard let rawArray = get("$.vc.credentialSubject.fhirBundle").array else { return JSON("") }
         return JSON(rawArray)
     }
 	
 	public var type: SHCertType {
-        guard let rawArray = get("$.vc..type.*").array,
-              rawArray.count > 0,
-              let rawType = rawArray[0].string else {
+        guard let rawArray = get("$.vc..type.*").array, rawArray.count > 0, let rawType = rawArray[0].string else {
             return .other
         }
         return SHCertType(value: rawType.replacingOccurrences(of: "https://smarthealth.cards#", with: ""))
@@ -125,22 +119,19 @@ public class SHCert: CertificationProtocol, Codable {
         var barcode: String = payload
         if !payload.starts(with: "ey") {
             // is not JWT, do numeric decoding
-            guard let barcodeValue = try? SHBarcodeDecoder.builder(payload: payload) else {
-                throw SHParsingError.invalidStructure
-            }
+            guard let barcodeValue = try? SHBarcodeDecoder.builder(payload: payload) else { throw SHParsingError.invalidStructure }
             barcode = barcodeValue
         }
         
         let barcodeParts = barcode.split(separator: ".")
-        guard let header = String(barcodeParts[0]).base64UrlDecoded() else {
-            throw SHParsingError.invalidStructure
-        }
+        guard let header = String(barcodeParts[0]).base64UrlDecoded() else { throw SHParsingError.invalidStructure }
+        
         let payload = String(barcodeParts[1]).base64UrlToBase64()
         guard let headerJson = try? JSONSerialization.jsonObject(with: header.data(using: .utf8)!, options: []) as? [String: Any] else { throw SHParsingError.invalidStructure }
+        
         var jsonData: Data
         
-        if let algo = headerJson["zip"] as? String,
-            algo == "DEF" {
+        if let algo = headerJson["zip"] as? String, algo == "DEF" {
             // use deflate
             let compressedData = Data(base64Encoded: payload)!
             jsonData = compressedData.inflateFixed()
@@ -157,14 +148,12 @@ public class SHCert: CertificationProtocol, Codable {
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
         if #available(iOS 13.0, *), #available(macOS 10.15, *) {
-            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes]), encoding: .utf8) else {
-                throw CertificateParsingError.unknown
-            }
+            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes]), encoding: .utf8) else { throw CertificateParsingError.unknown }
+            
             jsonRawString = jrs
         } else {
-            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: []), encoding: .utf8) else {
-                throw CertificateParsingError.unknown
-            }
+            guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: []), encoding: .utf8) else { throw CertificateParsingError.unknown }
+            
             jsonRawString = jrs.replacingOccurrences(of: #""\""#, with: "")
         }
         self.payload = jsonRawString
@@ -174,8 +163,7 @@ public class SHCert: CertificationProtocol, Codable {
         guard let issuer = payloadJson["iss"] as? String else { throw SHParsingError.issuerNotIncluded }
         self.issuerUrl = issuer
         
-        guard let nbfDouble = payloadJson["nbf"] as? Double,
-              Date(timeIntervalSince1970: nbfDouble) < Date()
+        guard let nbfDouble = payloadJson["nbf"] as? Double, Date(timeIntervalSince1970: nbfDouble) < Date()
         else { throw SHParsingError.timeBeforeNBF }
         
         if !checkKid(kidStr) {
@@ -209,6 +197,5 @@ public class SHCert: CertificationProtocol, Codable {
         }
         
         return Data()
-        
     }
 }
