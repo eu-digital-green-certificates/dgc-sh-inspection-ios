@@ -38,7 +38,7 @@ extension SHDataCenter {
         // for more to be added
         initializeWalletLocalData { result in
             if #available(iOS 15, *) {
-                if lastFetch < Date.now {
+                if lastFetch < Date() {
                     TrustedListLoader.loadTrustedList { response in
                         completion(response)
                         return

@@ -38,7 +38,7 @@ public class SHCert: CertificationProtocol, Codable {
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: payload.data(using: .utf8)!, options: [])
             let jsonRawString: String
-            if #available(iOS 13.0, *) {
+            if #available(iOS 13.0, *), #available(macOS 10.15, *) {
                 guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes, .prettyPrinted]), encoding: .utf8) else {
                     return ""
                 }
@@ -101,7 +101,6 @@ public class SHCert: CertificationProtocol, Codable {
     
     public var subType: String {
         guard let rawArray = get("$.vc..type.*").array,
-              rawArray.count > 0,
               rawArray.count > 1,
               let rawType = rawArray[1].string else {
             return ""
@@ -126,10 +125,10 @@ public class SHCert: CertificationProtocol, Codable {
         var barcode: String = payload
         if !payload.starts(with: "ey") {
             // is not JWT, do numeric decoding
-            guard let bc = try? SHBarcodeDecoder.builder(payload: payload) else {
+            guard let barcodeValue = try? SHBarcodeDecoder.builder(payload: payload) else {
                 throw SHParsingError.invalidStructure
             }
-            barcode = bc
+            barcode = barcodeValue
         }
         
         let barcodeParts = barcode.split(separator: ".")
@@ -154,10 +153,10 @@ public class SHCert: CertificationProtocol, Codable {
         }
         
         guard let kidStr = headerJson["kid"] as? String else { throw SHParsingError.kidNotIncluded }
-    
+        
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
-        if #available(iOS 13.0, *) {
+        if #available(iOS 13.0, *), #available(macOS 10.15, *) {
             guard let jrs = String(data: try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes]), encoding: .utf8) else {
                 throw CertificateParsingError.unknown
             }
@@ -227,30 +226,6 @@ extension Data {
           )
           return Data(bytes: buffer, count: read)
         }
-    }
-}
-
-extension String {
-    func base64UrlToBase64() -> String {
-        var str = self
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        if str.count % 4 != 0 {
-            str.append(String(repeating: "=", count: 4 - str.count % 4))
-        }
-        return str
-    }
-    func base64UrlDecoded() -> String? {
-        var str = self
-            .replacingOccurrences(of: "-", with: "+")
-            .replacingOccurrences(of: "_", with: "/")
-        if str.count % 4 != 0 {
-            str.append(String(repeating: "=", count: 4 - str.count % 4))
-        }
-        if let data = Data(base64Encoded: str, options: .ignoreUnknownCharacters) {
-            return String(data: data, encoding: .utf8)
-        }
-        return nil
     }
 }
 
