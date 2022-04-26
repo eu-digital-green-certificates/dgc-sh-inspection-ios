@@ -7,6 +7,6 @@
 
 import Foundation
 
-public enum SharedSHConstants {
+enum SharedSHConstants {
     static let shDataStorageName = "secure_sh_storage"
 }
