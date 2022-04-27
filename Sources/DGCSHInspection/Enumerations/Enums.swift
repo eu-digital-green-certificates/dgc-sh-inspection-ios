@@ -20,13 +20,3 @@ public enum SHCertType: String {
     }
 }
 
-public enum SHParsingError: Error {
-    case unknown
-    case invalidStructure
-    case kidNotIncluded
-    case kidNotFound(untrustedUrl: String)
-    case issuerNotIncluded
-    case timeBeforeNBF
-    case credentialExpired
-}
-
