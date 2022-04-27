@@ -120,16 +120,16 @@ public class SHCert: CertificationProtocol, Codable {
         var barcode: String = payload
         if !payload.starts(with: "ey") {
             // is not JWT, do numeric decoding
-            guard let barcodeValue = try? SHBarcodeDecoder.builder(payload: payload) else { throw SHParsingError.invalidStructure }
+            guard let barcodeValue = try? SHBarcodeDecoder.builder(payload: payload) else { throw CertificateParsingError.invalidStructure }
             barcode = barcodeValue
         }
         
         let barcodeParts = barcode.split(separator: ".")
-        guard let header = String(barcodeParts[0]).base64UrlDecoded() else { throw SHParsingError.invalidStructure }
+        guard let header = String(barcodeParts[0]).base64UrlDecoded() else { throw CertificateParsingError.invalidStructure }
         
         let payload = String(barcodeParts[1]).base64UrlToBase64()
         guard let data = header.data(using: .utf8), let headerJson = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-        else { throw SHParsingError.invalidStructure }
+        else { throw CertificateParsingError.invalidStructure }
         
         var jsonData: Data
         
@@ -142,40 +142,40 @@ public class SHCert: CertificationProtocol, Codable {
             jsonData = typData
         
         } else {
-            throw SHParsingError.invalidStructure
+            throw CertificateParsingError.invalidStructure
         }
         
-        guard let kidStr = headerJson["kid"] as? String else { throw SHParsingError.kidNotIncluded }
+        guard let kidStr = headerJson["kid"] as? String else { throw CertificateParsingError.kidNotIncluded }
         
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
         let jsonRawString: String
         if #available(iOS 13.0, *), #available(macOS 10.15, *) {
             let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [.withoutEscapingSlashes])
-            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknown }
+            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknownFormat }
             
             jsonRawString = jrs
             
         } else {
             let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: [])
-            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknown }
+            guard let jrs = String(data: jsonData, encoding: .utf8) else { throw CertificateParsingError.unknownFormat }
             
             jsonRawString = jrs.replacingOccurrences(of: #""\""#, with: "")
         }
         
         self.payload = jsonRawString
         guard let data = jsonRawString.data(using: .utf8), let payloadJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw SHParsingError.invalidStructure
+            throw CertificateParsingError.invalidStructure
         }
         
-        guard let issuer = payloadJson["iss"] as? String else { throw SHParsingError.issuerNotIncluded }
+        guard let issuer = payloadJson["iss"] as? String else { throw CertificateParsingError.issuerNotIncluded }
         self.issuerUrl = issuer
         
         guard let nbfDouble = payloadJson["nbf"] as? Double, Date(timeIntervalSince1970: nbfDouble) < Date()
-        else { throw SHParsingError.timeBeforeNBF }
+        else { throw CertificateParsingError.timeBeforeNBF }
         
         if !checkKid(kidStr) {
             // kid is valid
-            throw SHParsingError.kidNotFound(untrustedUrl: self.issuerUrl)
+            throw CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl)
         }
     }
     
