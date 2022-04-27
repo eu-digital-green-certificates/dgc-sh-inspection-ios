@@ -14,7 +14,7 @@ public final class DGCSHInspection: CertificateInspection {
     public func updateLocallyStoredData(appType: AppType, completion: @escaping DataCompletionHandler) {
         switch appType {
         case .verifier:
-            break
+            SHDataCenter.prepareWalletLocalData(completion: completion)
         case .wallet:
             SHDataCenter.reloadWalletData(completion: completion)
         }
