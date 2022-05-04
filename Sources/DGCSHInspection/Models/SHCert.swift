@@ -11,6 +11,7 @@ import SwiftyJSON
 import Sextant
 import SWCompression
 import Compression
+import JOSESwift
 
 public class SHCert: CertificationProtocol, Codable {
 	public var cryptographicallyValid: Bool = true
@@ -106,13 +107,6 @@ public class SHCert: CertificationProtocol, Codable {
 	public var dateOfBirth: String {
         return get("$.vc..birthDate").array?.first?.string ?? ""
     }
-     /*
-    // Used to instantiate a new SHCert object after the fact
-    required public convenience init(payload: String, ruleCountryCode: String? = nil) throws {
-        // try self._init(payload: payload, ruleCountryCode: ruleCountryCode, ignoreWarnings: false)
-        try self.init(payload: payload, ruleCountryCode: ruleCountryCode, ignoreWarnings: false)
-    }
-    */
     
     public required init(payload: String, ruleCountryCode: String? = nil) throws {
         // self.body = JSON(payload)
@@ -174,8 +168,43 @@ public class SHCert: CertificationProtocol, Codable {
         else { throw CertificateParsingError.timeBeforeNBF }
         
         if !checkKid(kidStr) {
-            // kid is valid
+            // kid is invalid
             throw CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl)
+        }
+        
+        guard let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) else { throw CertificateParsingError.issuerNotIncluded }
+        
+        guard let jwkData = jwk.data(using: .utf8),
+              let jwkObject = try JSONSerialization.jsonObject(with: jwkData, options: []) as? [String: Any] else {
+            throw CertificateParsingError.unknownFormat
+        }
+        
+        guard let x = jwkObject["x"] as? String else {throw CertificateParsingError.invalidStructure }
+        guard let y = jwkObject["y"] as? String else {throw CertificateParsingError.invalidStructure }
+        
+        guard let pubKey = JWK.ecFrom(x: x, y: y) else { throw CertificateParsingError.badPubKey }
+        
+        let h = barcodeParts[0]
+        let p = barcodeParts[1]
+        let s = barcodeParts[2]
+        
+        let dataSigned = (h + "." + p).data(using: .ascii)
+        let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
+        /*
+        let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
+        
+        let result = SecKeyVerifySignature(pubKey,
+                                           algorithm,
+                                           dataSigned! as CFData,
+                                           dataSignature! as CFData,
+                                           nil)
+         */
+        do {
+            let jws = try JWS(compactSerialization: barcode)
+            let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
+            let payload = try jws.validate(using: verifier)
+        } catch {
+            throw CertificateParsingError.invalidSignature // invalid signature
         }
     }
     

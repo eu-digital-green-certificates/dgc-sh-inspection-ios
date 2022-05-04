@@ -45,6 +45,14 @@ public class SHDataManager {
         }
     }
     
+    public func getJwkByKid(_ kidStr: String) -> String? {
+        if let jwk = localData.kidList[kidStr] {
+            return jwk
+        } else {
+            return nil
+        }
+    }
+    
     // MARK: Aux
     public func save(completion: @escaping DataCompletionHandler) {
         storage.save(localData, completion: completion)
