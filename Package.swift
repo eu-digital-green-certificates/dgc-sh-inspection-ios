@@ -19,7 +19,6 @@ let package = Package(
 		.package(name: "SwiftPath", url: "https://github.com/g-mark/SwiftPath.git", .branch("develop")),
         .package(name: "SWCompression", url: "https://github.com/tsolomko/SWCompression.git", from: "4.7.0"),
         .package(name: "Alamofire", url: "https://github.com/Alamofire/Alamofire", from: "5.5.0"),
-
     ],
     
     targets: [

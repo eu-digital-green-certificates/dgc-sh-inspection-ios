@@ -12,6 +12,10 @@ public class SHDataCenter {
     public static let shDataManager: SHDataManager = SHDataManager()
     // private static let trustListLoader: TrustedListLoader = TrustedListLoader()
     
+    public static var downloadedDataHasExpired: Bool {
+        return Date() > lastFetch.addingTimeInterval(12*60*60.0)
+    }
+
     public static var certStrings: [SHCertString] {
         get {
             return shDataManager.localData.certStrings

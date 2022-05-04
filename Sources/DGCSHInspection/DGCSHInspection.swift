@@ -11,6 +11,10 @@ import DGCCoreLibrary
 public final class DGCSHInspection: CertificateInspection {
     public var lastUpdate: Date
     
+    public var downloadedDataHasExpired: Bool {
+        return SHDataCenter.downloadedDataHasExpired
+    }
+
     public func updateLocallyStoredData(appType: AppType, completion: @escaping DataCompletionHandler) {
         switch appType {
         case .verifier:
