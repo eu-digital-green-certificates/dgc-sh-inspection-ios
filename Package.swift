@@ -15,8 +15,8 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
 		.package(name: "DGCCoreLibrary", url: "https://github.com/eu-digital-green-certificates/dgca-verification-core-library-ios.git", .branch("main")),
+        .package(name: "SwiftPath", url: "https://github.com/g-mark/SwiftPath.git", .branch("develop")),
         .package(name: "Sextant", url: "https://github.com/KittyMac/Sextant.git", .branch("main")),
-		.package(name: "SwiftPath", url: "https://github.com/g-mark/SwiftPath.git", .branch("develop")),
         .package(name: "SWCompression", url: "https://github.com/tsolomko/SWCompression.git", from: "4.7.0"),
         .package(name: "Alamofire", url: "https://github.com/Alamofire/Alamofire", from: "5.5.0"),
         .package(name: "JOSESwift", url: "https://github.com/airsidemobile/JOSESwift.git", .branch("master")),
