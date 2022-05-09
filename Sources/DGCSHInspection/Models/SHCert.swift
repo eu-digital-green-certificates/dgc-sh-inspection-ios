@@ -8,7 +8,7 @@
 import Foundation
 import DGCCoreLibrary
 import SwiftyJSON
-import Sextant
+import SextantKit
 import SWCompression
 import Compression
 import JOSESwift
