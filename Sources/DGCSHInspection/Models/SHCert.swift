@@ -25,9 +25,9 @@ public class SHCert: CertificationProtocol, Codable {
 	public var payload: String
     public var isUntrusted: Bool = false
     public var issuerUrl: String?
-	
-    public var errorList = [CertificateParsingError]()
     
+    var errorList = [CertificateParsingError]()
+
 	public var firstName: String {
         var targetString = ""
         let rawNameArray = get("$.vc..name..given.*").array
@@ -150,9 +150,9 @@ public class SHCert: CertificationProtocol, Codable {
             throw CertificateParsingError.invalidStructure
         }
         
-        let kidStr = headerJson["kid"] as? String ?? ""
-        if kidStr.isEmpty {
-            errorList.append(CertificateParsingError.kidNotIncluded)
+        guard let kidStr = headerJson["kid"] as? String
+        else {
+            throw(CertificateParsingError.kidNotIncluded)
         }
         
         let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -195,57 +195,55 @@ public class SHCert: CertificationProtocol, Codable {
             errorList.append(CertificateParsingError.timeBeforeNBF)
         }
         
-        if !checkKid(kidStr) {
+        guard checkKid(kidStr) else {
             // kid is invalid
-            errorList.append(CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl ?? ""))
-        } else {
+            throw(CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl ?? ""))
+        }
         
-            let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) ?? ""
-            if jwk.isEmpty {
-                errorList.append(CertificateParsingError.issuerNotIncluded)
-            }
-            
-            guard let jwkData = jwk.data(using: .utf8),
-                let jwkObject = try JSONSerialization.jsonObject(with: jwkData, options: []) as? [String: Any] else {
-                throw CertificateParsingError.unknownFormat
-            }
-            
-            guard let x = jwkObject["x"] as? String
-            else {
-                throw CertificateParsingError.invalidStructure
-            }
-            guard let y = jwkObject["y"] as? String
-            else {
-                throw CertificateParsingError.invalidStructure
-            }
-            
-            guard let pubKey = JWK.ecFrom(x: x, y: y)
-            else {
-                throw CertificateParsingError.badPubKey
-            }
-            
-            let h = barcodeParts[0]
-            let p = barcodeParts[1]
-            let s = barcodeParts[2]
-            
-            let dataSigned = (h + "." + p).data(using: .ascii)
-            let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
-            /*
-            let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
-            
-            let result = SecKeyVerifySignature(pubKey,
-                                               algorithm,
-                                               dataSigned! as CFData,
-                                               dataSignature! as CFData,
-                                               nil)
-             */
-            do {
-                let jws = try JWS(compactSerialization: barcode)
-                let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
-                let payload = try jws.validate(using: verifier)
-            } catch {
-                throw CertificateParsingError.invalidSignature // invalid signature
-            }
+        guard let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) else {
+            throw(CertificateParsingError.issuerNotIncluded)
+        }
+        
+        guard let jwkData = jwk.data(using: .utf8),
+            let jwkObject = try JSONSerialization.jsonObject(with: jwkData, options: []) as? [String: Any] else {
+            throw CertificateParsingError.unknownFormat
+        }
+        
+        guard let x = jwkObject["x"] as? String
+        else {
+            throw CertificateParsingError.invalidStructure
+        }
+        guard let y = jwkObject["y"] as? String
+        else {
+            throw CertificateParsingError.invalidStructure
+        }
+        
+        guard let pubKey = JWK.ecFrom(x: x, y: y)
+        else {
+            throw CertificateParsingError.badPubKey
+        }
+        
+        let h = barcodeParts[0]
+        let p = barcodeParts[1]
+        let s = barcodeParts[2]
+        
+        let dataSigned = (h + "." + p).data(using: .ascii)
+        let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
+        /*
+        let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
+        
+        let result = SecKeyVerifySignature(pubKey,
+                                           algorithm,
+                                           dataSigned! as CFData,
+                                           dataSignature! as CFData,
+                                           nil)
+         */
+        do {
+            let jws = try JWS(compactSerialization: barcode)
+            let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
+            let payload = try jws.validate(using: verifier)
+        } catch {
+            throw CertificateParsingError.invalidSignature // invalid signature
         }
     }
     
