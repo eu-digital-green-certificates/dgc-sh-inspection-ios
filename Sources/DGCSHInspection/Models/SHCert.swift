@@ -26,6 +26,8 @@ public class SHCert: CertificationProtocol, Codable {
     public var isUntrusted: Bool = false
     public var issuerUrl: String?
 	
+    public var errorList = [CertificateParsingError]()
+    
 	public var firstName: String {
         var targetString = ""
         let rawNameArray = get("$.vc..name..given.*").array
@@ -111,7 +113,6 @@ public class SHCert: CertificationProtocol, Codable {
     public required init(payload: String, ruleCountryCode: String? = nil) throws {
         // self.body = JSON(payload)
         self.fullPayloadString = payload
-        var errorList = [CertificateParsingError]()
         
         var barcode: String = payload
         if !payload.starts(with: "ey") {
