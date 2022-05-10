@@ -149,8 +149,8 @@ public class SHCert: CertificationProtocol, Codable {
             throw CertificateParsingError.invalidStructure
         }
         
-        guard let kidStr = headerJson["kid"] as? String
-        else {
+        let kidStr = headerJson["kid"] as? String ?? ""
+        if kidStr.isEmpty {
             errorList.append(CertificateParsingError.kidNotIncluded)
         }
         
