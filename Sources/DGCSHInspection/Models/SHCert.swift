@@ -223,11 +223,11 @@ public class SHCert: CertificationProtocol, Codable {
             throw CertificateParsingError.badPubKey
         }
         
+        /*
         let h = barcodeParts[0]
         let p = barcodeParts[1]
         let s = barcodeParts[2]
         
-        /*
         let dataSigned = (h + "." + p).data(using: .ascii)
         let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
         
@@ -242,7 +242,7 @@ public class SHCert: CertificationProtocol, Codable {
         do {
             let jws = try JWS(compactSerialization: barcode)
             let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
-            let payload = try jws.validate(using: verifier)
+            _ = try jws.validate(using: verifier)
         } catch {
             throw CertificateParsingError.invalidSignature // invalid signature
         }
