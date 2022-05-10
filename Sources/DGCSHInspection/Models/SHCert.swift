@@ -197,53 +197,54 @@ public class SHCert: CertificationProtocol, Codable {
         if !checkKid(kidStr) {
             // kid is invalid
             errorList.append(CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl ?? ""))
-        }
+        } else {
         
-        let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) ?? ""
-        if jwk.isEmpty {
-            errorList.append(CertificateParsingError.issuerNotIncluded)
-        }
-        
-        guard let jwkData = jwk.data(using: .utf8),
-            let jwkObject = try JSONSerialization.jsonObject(with: jwkData, options: []) as? [String: Any] else {
-            throw CertificateParsingError.unknownFormat
-        }
-        
-        guard let x = jwkObject["x"] as? String
-        else {
-            throw CertificateParsingError.invalidStructure
-        }
-        guard let y = jwkObject["y"] as? String
-        else {
-            throw CertificateParsingError.invalidStructure
-        }
-        
-        guard let pubKey = JWK.ecFrom(x: x, y: y)
-        else {
-            throw CertificateParsingError.badPubKey
-        }
-        
-        let h = barcodeParts[0]
-        let p = barcodeParts[1]
-        let s = barcodeParts[2]
-        
-        let dataSigned = (h + "." + p).data(using: .ascii)
-        let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
-        /*
-        let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
-        
-        let result = SecKeyVerifySignature(pubKey,
-                                           algorithm,
-                                           dataSigned! as CFData,
-                                           dataSignature! as CFData,
-                                           nil)
-         */
-        do {
-            let jws = try JWS(compactSerialization: barcode)
-            let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
-            let payload = try jws.validate(using: verifier)
-        } catch {
-            throw CertificateParsingError.invalidSignature // invalid signature
+            let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) ?? ""
+            if jwk.isEmpty {
+                errorList.append(CertificateParsingError.issuerNotIncluded)
+            }
+            
+            guard let jwkData = jwk.data(using: .utf8),
+                let jwkObject = try JSONSerialization.jsonObject(with: jwkData, options: []) as? [String: Any] else {
+                throw CertificateParsingError.unknownFormat
+            }
+            
+            guard let x = jwkObject["x"] as? String
+            else {
+                throw CertificateParsingError.invalidStructure
+            }
+            guard let y = jwkObject["y"] as? String
+            else {
+                throw CertificateParsingError.invalidStructure
+            }
+            
+            guard let pubKey = JWK.ecFrom(x: x, y: y)
+            else {
+                throw CertificateParsingError.badPubKey
+            }
+            
+            let h = barcodeParts[0]
+            let p = barcodeParts[1]
+            let s = barcodeParts[2]
+            
+            let dataSigned = (h + "." + p).data(using: .ascii)
+            let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
+            /*
+            let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
+            
+            let result = SecKeyVerifySignature(pubKey,
+                                               algorithm,
+                                               dataSigned! as CFData,
+                                               dataSignature! as CFData,
+                                               nil)
+             */
+            do {
+                let jws = try JWS(compactSerialization: barcode)
+                let verifier = Verifier(verifyingAlgorithm: .ES256, publicKey: pubKey)!
+                let payload = try jws.validate(using: verifier)
+            } catch {
+                throw CertificateParsingError.invalidSignature // invalid signature
+            }
         }
     }
     
