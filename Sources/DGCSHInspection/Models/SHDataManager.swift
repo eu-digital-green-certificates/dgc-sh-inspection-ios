@@ -38,19 +38,12 @@ public class SHDataManager {
     }
     
     public func containsKid(_ kidStr: String) -> Bool {
-        if localData.kidList.firstIndex(where: { $0.key == kidStr }) != nil {
-            return true
-        } else {
-            return false
-        }
+        return (localData.kidList.firstIndex(where: { $0.key == kidStr }) != nil)
     }
     
     public func getJwkByKid(_ kidStr: String) -> String? {
-        if let jwk = localData.kidList[kidStr] {
-            return jwk
-        } else {
-            return nil
-        }
+        let jwk = localData.kidList[kidStr]
+        return jwk
     }
     
     // MARK: Aux
