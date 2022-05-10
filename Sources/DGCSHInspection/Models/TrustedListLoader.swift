@@ -66,7 +66,7 @@ public class TrustedListLoader {
                 }
             }
             trustListGroup.notify(queue: .main) {
-                SHDataCenter.shDataManager.replace(kidList) { result in
+                SHDataCenter.shDataManager.merge(kidList) { result in
                     completion(.success)
                 }
             }

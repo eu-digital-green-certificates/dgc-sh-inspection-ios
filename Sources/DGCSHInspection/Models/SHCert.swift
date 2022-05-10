@@ -227,9 +227,10 @@ public class SHCert: CertificationProtocol, Codable {
         let p = barcodeParts[1]
         let s = barcodeParts[2]
         
+        /*
         let dataSigned = (h + "." + p).data(using: .ascii)
         let dataSignature = Data(base64Encoded: String(s).base64UrlToBase64())
-        /*
+        
         let algorithm: SecKeyAlgorithm = .ecdsaSignatureMessageX962SHA256 // ecdsaSignatureDigestX962SHA256
         
         let result = SecKeyVerifySignature(pubKey,

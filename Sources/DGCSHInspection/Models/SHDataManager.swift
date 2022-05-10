@@ -31,7 +31,12 @@ public class SHDataManager {
         localData.lastFetch = Date()
         storage.save(localData, completion: completion)
     }
-    
+    public func merge(_ trustedIssuer: [String: String], completion: @escaping DataCompletionHandler) {
+        localData.kidList.merge(trustedIssuer)
+        localData.lastFetch = Date()
+        storage.save(localData, completion: completion)
+    }
+
     public func add(_ trustedIssuer: [String: String], completion: @escaping DataCompletionHandler) {
         localData.kidList.merge(trustedIssuer) { (current, _) in current }
         storage.save(localData, completion: completion)

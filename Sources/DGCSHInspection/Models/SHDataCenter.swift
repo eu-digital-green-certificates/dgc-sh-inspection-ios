@@ -61,7 +61,6 @@ extension SHDataCenter {
                     completion(.success)
                 }
             }
-            //completion(.success)
         }
     }
     
