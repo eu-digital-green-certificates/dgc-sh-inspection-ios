@@ -14,17 +14,19 @@ import Compression
 import JOSESwift
 
 public class SHCert: CertificationProtocol, Codable {
-	public var cryptographicallyValid: Bool = true
+    public let certTypeString: String
+	public let cryptographicallyValid: Bool
 	public var isRevoked: Bool = false
-	public var certTypeString: String = ""
-	public var certHash: String = ""
+
+    public let certHash: String
 	public var uvciHash: Data?
 	public var countryCodeUvciHash: Data?
 	public var signatureHash: Data?
-    public var fullPayloadString: String
-	public var payload: String
-    public var isUntrusted: Bool = false
-    public var issuerUrl: String?
+    
+    public let fullPayloadString: String
+	public let payload: String
+    public let isUntrusted: Bool
+    public let issuerUrl: String
     
 	public var firstName: String {
         var targetString = ""
@@ -111,6 +113,8 @@ public class SHCert: CertificationProtocol, Codable {
     public required init(payload: String, ruleCountryCode: String? = nil) throws {
         // self.body = JSON(payload)
         self.fullPayloadString = payload
+        self.certTypeString = "SHC"
+        self.certHash = ""
         
         var errorList = [CertificateParsingError]()
         
@@ -187,7 +191,7 @@ public class SHCert: CertificationProtocol, Codable {
             errorList.append(CertificateParsingError.issuerNotIncluded)
         }
         
-        self.issuerUrl = issuer
+        self.issuerUrl = issuer ?? ""
         if let nbfDouble = payloadJson["nbf"] as? Double,
             Date(timeIntervalSince1970: nbfDouble) < Date() {
             // struct is ok
@@ -246,6 +250,9 @@ public class SHCert: CertificationProtocol, Codable {
         } catch {
             throw CertificateParsingError.invalidSignature // invalid signature
         }
+        
+        self.isUntrusted = !errorList.isEmpty
+        self.cryptographicallyValid = !errorList.isEmpty
     }
     
     private func checkKid(_ kid: String) -> Bool {
