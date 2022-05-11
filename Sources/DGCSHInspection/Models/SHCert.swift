@@ -19,6 +19,7 @@ public class SHCert: CertificationProtocol, Codable {
 	public var isRevoked: Bool = false
 
     public let certHash: String
+    
 	public var uvciHash: Data?
 	public var countryCodeUvciHash: Data?
 	public var signatureHash: Data?
@@ -199,9 +200,9 @@ public class SHCert: CertificationProtocol, Codable {
             errorList.append(CertificateParsingError.timeBeforeNBF)
         }
         
-        guard checkKid(kidStr) else {
+        guard SHDataCenter.shDataManager.containsKid(kidStr) else {
             // kid is invalid
-            throw(CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl ?? ""))
+            throw(CertificateParsingError.kidNotFound(untrustedUrl: self.issuerUrl))
         }
         
         guard let jwk = SHDataCenter.shDataManager.getJwkByKid(kidStr) else {
@@ -254,11 +255,7 @@ public class SHCert: CertificationProtocol, Codable {
         self.isUntrusted = !errorList.isEmpty
         self.cryptographicallyValid = !errorList.isEmpty
     }
-    
-    private func checkKid(_ kid: String) -> Bool {
-        return SHDataCenter.shDataManager.containsKid(kid)
-    }
-	
+    	
 	private func get(_ key: String) -> JSON {
         if let query = payload.query(values: key),
             let jsonQuery = try? JSONSerialization.data(withJSONObject: query),
