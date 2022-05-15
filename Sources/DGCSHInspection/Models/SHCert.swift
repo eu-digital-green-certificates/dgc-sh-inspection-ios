@@ -8,7 +8,7 @@
 import Foundation
 import DGCCoreLibrary
 import SwiftyJSON
-import SextantKit
+import Sextant
 import SWCompression
 import Compression
 import JOSESwift
@@ -255,7 +255,7 @@ public class SHCert: CertificationProtocol, Codable {
         self.isUntrusted = !errorList.isEmpty
         self.cryptographicallyValid = !errorList.isEmpty
     }
-    	
+    
 	private func get(_ key: String) -> JSON {
         if let query = payload.query(values: key),
             let jsonQuery = try? JSONSerialization.data(withJSONObject: query),

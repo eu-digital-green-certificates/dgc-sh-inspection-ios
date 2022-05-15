@@ -29,12 +29,12 @@
         }
       },
       {
-        "package": "ChronometerKit",
+        "package": "Chronometer",
         "repositoryURL": "https://github.com/KittyMac/Chronometer.git",
         "state": {
           "branch": null,
-          "revision": "0a8b65b0265674328d2cbda84c9a7cb21164891f",
-          "version": "0.2.0"
+          "revision": "bf49dace3be107ab11609ed428c1b7878a07be52",
+          "version": "0.1.4"
         }
       },
       {
@@ -42,17 +42,17 @@
         "repositoryURL": "https://github.com/eu-digital-green-certificates/dgca-verification-core-library-ios.git",
         "state": {
           "branch": "main",
-          "revision": "2934a0f21f65f19bea541e65e4486c5473cfadff",
+          "revision": "16689d86cc2fb2345919de069a55028c0f74cdc1",
           "version": null
         }
       },
       {
-        "package": "HitchKit",
+        "package": "Hitch",
         "repositoryURL": "https://github.com/KittyMac/Hitch.git",
         "state": {
           "branch": null,
-          "revision": "08ebf1181b986718c17ac6088bbc82a0b2cf8438",
-          "version": "0.5.1"
+          "revision": "eec08edd53a0d433f707d241483e03e59becafe9",
+          "version": "0.4.36"
         }
       },
       {
@@ -65,21 +65,21 @@
         }
       },
       {
-        "package": "SextantKit",
+        "package": "Sextant",
         "repositoryURL": "https://github.com/KittyMac/Sextant.git",
         "state": {
-          "branch": "main",
-          "revision": "66df85ded4001cfb2413bd7d2fb4031cb70a1f43",
-          "version": null
+          "branch": null,
+          "revision": "ce0e5bd27b04c80de12d3729f028d01155d4b2a8",
+          "version": "0.4.11"
         }
       },
       {
-        "package": "SpankerKit",
+        "package": "Spanker",
         "repositoryURL": "https://github.com/KittyMac/Spanker.git",
         "state": {
           "branch": null,
-          "revision": "7a5c80ae47dc98321700a44edea56acee9d7757e",
-          "version": "0.3.0"
+          "revision": "6becc7caf3e1648d2b9331652dc4809e91514cff",
+          "version": "0.2.25"
         }
       },
       {
@@ -87,8 +87,8 @@
         "repositoryURL": "https://github.com/tsolomko/SWCompression.git",
         "state": {
           "branch": null,
-          "revision": "4ad6940f2990f2d9f27b39d013c7a64b602d9c50",
-          "version": "4.8.0"
+          "revision": "0714d4421e1fa1e02af51cd8e615417a95f0d230",
+          "version": "4.8.1"
         }
       },
       {
