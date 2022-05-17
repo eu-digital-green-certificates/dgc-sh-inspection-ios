@@ -255,6 +255,8 @@ public class SHCert: CertificationProtocol, Codable {
         
         self.isUntrusted = !errorList.isEmpty
         self.cryptographicallyValid = !errorList.isEmpty
+
+      self.certificateCreationDate = ""
     }
     
 	private func get(_ key: String) -> JSON {
