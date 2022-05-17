@@ -14,6 +14,7 @@ import Compression
 import JOSESwift
 
 public class SHCert: CertificationProtocol, Codable {
+  public var certificateCreationDate: String
     public let certTypeString: String
 	public let cryptographicallyValid: Bool
 	public var isRevoked: Bool = false
