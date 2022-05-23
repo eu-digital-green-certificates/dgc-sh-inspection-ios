@@ -112,7 +112,9 @@ public class SHCert: CertificationProtocol, Codable {
   }
 
   public var certificateCreationDate: String {
-    return dates.last?.rawString() ?? ""
+    let creationDateString = dates.last?.rawString() ?? ""
+    let creationDate = Date(dateString: creationDateString)
+    return creationDate?.localDateString ?? ""
   }
 
   public required init(payload: String, ruleCountryCode: String? = nil) throws {
