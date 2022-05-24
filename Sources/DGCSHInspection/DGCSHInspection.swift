@@ -8,13 +8,29 @@
 import Foundation
 import DGCCoreLibrary
 
-public final class DGCSHInspection: CertificateValidating {
-    public var lastUpdate: Date
+public final class DGCSHInspection {
+    public init() {}
+}
+
+extension DGCSHInspection: CertificateValidating {
+    
+    public func validateCertificate(_ certificate: CertificationProtocol) -> ValidityState? {
+        guard let _ = certificate as? SHCert else { return nil }
+        
+        return ValidityState(technicalValidity: VerificationResult.valid, issuerValidity: VerificationResult.valid, destinationValidity: VerificationResult.valid, travalerValidity: VerificationResult.valid, allRulesValidity: VerificationResult.valid, validityFailures: [], infoSection: nil, isRevoked: false)
+    }
+}
+
+extension DGCSHInspection: DataLoadingProtocol {
+    
+    public var lastUpdate: Date {
+        SHDataCenter.lastFetch
+    }
     
     public var downloadedDataHasExpired: Bool {
         return SHDataCenter.downloadedDataHasExpired
     }
-
+    
     public func updateLocallyStoredData(appType: AppType, completion: @escaping DataCompletionHandler) {
         switch appType {
         case .verifier:
@@ -23,13 +39,7 @@ public final class DGCSHInspection: CertificateValidating {
             SHDataCenter.reloadWalletData(completion: completion)
         }
     }
-    
-    public func validateCertificate(_ certificate: CertificationProtocol) -> ValidityState? {
-        guard let _ = certificate as? SHCert else { return nil }
-        
-        return ValidityState(technicalValidity: VerificationResult.valid, issuerValidity: VerificationResult.valid, destinationValidity: VerificationResult.valid, travalerValidity: VerificationResult.valid, allRulesValidity: VerificationResult.valid, validityFailures: [], infoSection: nil, isRevoked: false)
-    }
-    
+
     public func prepareLocallyStoredData(appType: AppType, completion: @escaping DataCompletionHandler) {
         switch appType {
         case .verifier:
@@ -37,9 +47,5 @@ public final class DGCSHInspection: CertificateValidating {
         case .wallet:
             SHDataCenter.prepareWalletLocalData(completion: completion)
         }
-    }
-    
-    public init() {
-        self.lastUpdate = Date()
     }
 }
