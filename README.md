@@ -26,7 +26,7 @@
 
 ## About
 
-This repository contains the source code of the EU Digital COVID Certificate Verification Center Module for [Smart Health Cards](https://smarthealth.cards/en/) for IOS. 
+This repository contains the source code of the EU Digital COVID Certificate Verification Center Module for Verifiable Credentials and [Smart Health Cards](https://smarthealth.cards/en/) for IOS. 
 
 This module provides the functionality for scanning smart health cards (single QR Code). Multiple QR Codes are currently not supported. 
 
